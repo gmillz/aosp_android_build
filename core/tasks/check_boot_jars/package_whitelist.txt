@@ -239,5 +239,11 @@ com\.google\.android\..*
 com\.google\.vr\.platform.*
 
 ###################################################
+
 # Packages used for Android in Chrome OS
 org\.chromium\.arc
+
+# slim additions
+slim.*
+org\.slim.*
+org\.codeaurora.*

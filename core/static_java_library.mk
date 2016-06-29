@@ -115,6 +115,15 @@ else
 framework_res_package_export := \
     $(call intermediates-dir-for,APPS,framework-res,,COMMON)/package-export.apk
 endif
+ifneq ($(DISABLE_SLIM_FRAMEWORK),true)
+# Avoid possible circular dependency with our framework
+ifneq ($(LOCAL_IGNORE_SUBDIR), true)
+slim_framework_res_package_export := \
+    $(call intermediates-dir-for,APPS,org.slim.framework-res,,COMMON)/package-export.apk
+slim_framework_res_package_export_deps := \
+    $(dir $(slim_framework_res_package_export))src/R.stamp
+endif #LOCAL_IGNORE_SUBDIR
+endif
 endif
 
 ifdef LOCAL_USE_AAPT2
@@ -161,7 +170,7 @@ endif
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_ANDROID_MANIFEST := $(full_android_manifest)
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_RESOURCE_PUBLICS_OUTPUT := $(intermediates.COMMON)/public_resources.xml
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_RESOURCE_DIR := $(LOCAL_RESOURCE_DIR)
-$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_AAPT_INCLUDES := $(framework_res_package_export)
+$(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_AAPT_INCLUDES := $(framework_res_package_export) $(slim_framework_res_package_export)
 
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_ASSET_DIR :=
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_PROGUARD_OPTIONS_FILE := $(proguard_options_file)
@@ -169,6 +178,7 @@ $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_MANIFEST_PACKAGE_NAME :=
 $(LOCAL_INTERMEDIATE_TARGETS): PRIVATE_MANIFEST_INSTRUMENTATION_FOR :=
 
 ifdef LOCAL_USE_AAPT2
+
   # One more level with name res so we can zip up the flat resources that can be linked by apps.
   my_compiled_res_base_dir := $(intermediates.COMMON)/flat-res/res
   ifneq (,$(renderscript_target_api))
@@ -183,7 +193,7 @@ else
   $(R_file_stamp): .KATI_IMPLICIT_OUTPUTS += $(intermediates.COMMON)/R.txt
   $(R_file_stamp): PRIVATE_RESOURCE_LIST := $(all_resources)
   $(R_file_stamp) : $(all_resources) $(full_android_manifest) $(AAPT) $(SOONG_ZIP) \
-    $(framework_res_package_export) $(rs_generated_res_zip)
+    $(framework_res_package_export) $(slim_framework_res_package_export) $(rs_generated_res_zip)
 	@echo "target R.java/Manifest.java: $(PRIVATE_MODULE) ($@)"
 	$(create-resource-java-files)
 	$(hide) find $(PRIVATE_JAVA_GEN_DIR) -name R.java | xargs cat > $@

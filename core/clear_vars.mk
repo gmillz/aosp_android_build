@@ -477,3 +477,6 @@ LOCAL_IS_AUX_MODULE :=
 # Leave the current makefile to make sure we don't break anything
 # that expects to be able to find the name of the current makefile.
 MAKEFILE_LIST := $(lastword $(MAKEFILE_LIST))
+
+# Extras
+LOCAL_IGNORE_SUBDIR :=
