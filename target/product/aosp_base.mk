@@ -13,4 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+PRODUCT_PACKAGE_OVERLAYS += build/make/target/product/overlay
+
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
+$(call inherit-product, frameworks/slim/slim_framework.mk)
